@@ -1,0 +1,46 @@
+<launch>
+
+  <arg name="fcu_url" default="/dev/ttyUSB0:921600" />
+	<arg name="gcs_url" default="udp://192.168.2.173@192.168.2.192:14550" />
+	<arg name="tgt_system" default="1" />
+	<arg name="tgt_component" default="1" />
+	<arg name="log_output" default="screen" />
+
+       <arg name="xyP"      default="0.8"/>
+       <arg name="xyI"      default="0.0"/>
+       <arg name="xyD"      default="0.14"/>  
+       <arg name="zP"       default="0.0"/>
+       <arg name="zI"       default="0.0"/>
+       <arg name="zD"       default="0.0"/>  
+
+<!-- mavros -->
+	<include file="$(find mavros)/launch/node.launch">
+		<arg name="pluginlists_yaml" value="$(find mavros)/launch/px4_pluginlists.yaml" />
+		<arg name="config_yaml" value="$(find mavros)/launch/px4_config.yaml" />
+
+		<arg name="fcu_url" value="$(arg fcu_url)" />
+		<arg name="gcs_url" value="$(arg gcs_url)" />
+		<arg name="tgt_system" value="$(arg tgt_system)" />
+		<arg name="tgt_component" value="$(arg tgt_component)" />
+		<arg name="log_output" value="$(arg log_output)" />
+    <!-- <param name="mocap/use_tf" value="false"/>
+    <param name="mocap/use_pose" value="true"/>  -->
+	</include>
+
+<!-- Aruco Tag 识别算法 -->
+	<include file="$(find aruco_ros)/launch/single.launch">
+
+	</include>
+
+<!-- 视觉速度控制节点 -->
+  <node name="velocity_marker_land_node" pkg="velocity_marker_land" type="velocity_marker_land_node" output="screen" >
+     <param name="xyP" value="$(arg xyP)" />
+     <param name="xyI" value="$(arg xyI)" />
+     <param name="xyD" value="$(arg xyD)" />
+     <param name="zP" value="$(arg zP)" />
+     <param name="zI" value="$(arg zI)" />
+     <param name="zD" value="$(arg zD)" />
+  
+  </node>    
+
+</launch>
